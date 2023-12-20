@@ -19,4 +19,4 @@ git:
 	git add *.c *.h Makefile README*
 	git commit -m "new commit"
 	git push -u origin main \
-	Alexh1972
+	echo Alexh1972
