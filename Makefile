@@ -17,6 +17,7 @@ pack:
 	zip 312CA_CazacuAlexandruDan_Tema3.zip *.c *.h Makefile README*
 git:
 	touch username
+	rm username
 	echo Alexh1972 > username
 	git add *.c *.h Makefile README*
 	git commit -m "new commit"
