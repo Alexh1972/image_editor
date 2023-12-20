@@ -16,6 +16,9 @@ gdb:
 pack:
 	zip 312CA_CazacuAlexandruDan_Tema3.zip *.c *.h Makefile README*
 git:
+	touch username
+	echo Alexh1972 > username
 	git add *.c *.h Makefile README*
 	git commit -m "new commit"
-	git push -u origin main < echo Alexh1972
+	git push -u origin main < username
+	rm username
