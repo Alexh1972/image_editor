@@ -18,4 +18,4 @@ pack:
 git:
 	git add *.c *.h Makefile README*
 	git commit -m "new commit"
-	git push -u origin main
+	git push -u origin main \ Alexh1972
