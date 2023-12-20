@@ -16,6 +16,6 @@ gdb:
 pack:
 	zip 312CA_CazacuAlexandruDan_Tema3.zip *.c *.h Makefile README*
 git:
-	git add *
+	git add *.c *.h Makefile README*
 	git commit -m "new commit"
 	git push -u origin main
