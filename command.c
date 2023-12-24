@@ -3,14 +3,37 @@
 
 void select_from_image(image *image)
 {
-	char command[100];
+	char command[100], *token, line[100];
 	scanf("%s", command);
 	int first_x = 0, first_y = 0, second_x = 0, second_y = 0;
 	if (strcmp(command, "ALL") == 0) {
 		select_whole_image(image);
 	} else {
+		fgets(line, 100, stdin);
 		first_x = convert_string_to_integer(command);
-		scanf("%d%d%d", &first_y, &second_x, &second_y);
+		token = strtok(line, " \n");
+		if (token == NULL) {
+			printf("Invalid command\n");
+			return;
+		}
+		first_y = convert_string_to_integer(token);
+		token = strtok(NULL, " \n");
+		if (token == NULL) {
+			printf("Invalid command\n");
+			return;
+		}
+		second_x = convert_string_to_integer(token);
+		token = strtok(NULL, " \n");
+		if (token == NULL) {
+			printf("Invalid command\n");
+			return;
+		}
+		second_y = convert_string_to_integer(token);
+
+		if (first_x == 1e9 || second_x == 1e9 || first_y == 1e9 || second_y == 1e9) {
+			printf("Invalid command\n");
+			return;
+		}
 		select_image_region(image, first_x, first_y, second_x, second_y);
 	}
 }

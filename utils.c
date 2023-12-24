@@ -55,9 +55,15 @@ void eliminate_comments(FILE *file)
 int convert_string_to_integer(char string[])
 {
 	int i = 0;
-	int answer = 0;
+	int answer = 0, multiplier = 1;
+	if (string[0] == '-') {
+		multiplier = -1;
+		i = 1;
+	}
 	while (string[i]) {
-		answer = answer * 10 + (string[i] - '0');
+		if (string[i] < '0' || string[i] > '9')
+			return 1e9;
+		answer = answer * 10 + multiplier * (string[i] - '0');
 		i++;
 	}
 	return answer;

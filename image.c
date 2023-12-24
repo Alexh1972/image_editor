@@ -77,10 +77,21 @@ void select_image_region(image *image, int first_x, int first_y, int second_x, i
 		printf("No image loaded\n");
 		return;
 	}
+	int auxiliar;
 
 	if (first_x >= 0 && first_x < image->width && second_x >= 0 && second_x <= image->width && 
 	    first_y >= 0 && first_y < image->height && second_y >= 0 && second_y <= image->height &&
 		first_x != second_x && first_y != second_y) {
+		if (first_x > second_x) {
+			auxiliar = first_x;
+			first_x = second_x;
+			second_x = auxiliar;
+		}
+		if (first_y > second_y) {
+			auxiliar = first_y;
+			first_y = second_y;
+			second_y = auxiliar;
+		}
 		set_selection(image, first_x, first_y, second_x, second_y);
 		printf("Selected %d %d %d %d\n", first_x, first_y, second_x, second_y);
 	} else {
@@ -102,18 +113,6 @@ void select_whole_image(image *image)
 
 void set_selection(image *image, int first_x, int first_y, int second_x, int second_y)
 {
-	int auxiliar;
-	if (first_x > second_x) {
-		auxiliar = first_x;
-		first_x = second_x;
-		second_x = auxiliar;
-	}
-	if (first_y > second_y) {
-		auxiliar = first_y;
-		first_y = second_y;
-		second_y = auxiliar;
-	}
-
 	image->x_minimum = first_x;
 	image->y_minimum = first_y;
 	image->x_maximum = second_x;
