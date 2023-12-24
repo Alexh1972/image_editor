@@ -41,7 +41,34 @@ void select_from_image(image *image)
 void print_histogram(image *image)
 {
 	int maximum_stars, number_bins;
-	scanf("%d%d", &maximum_stars, &number_bins);
+	char line[100], *token;
+	fgets(line, 100, stdin);
+	token = strtok(line, " \n");
+	if (token == NULL) {
+		if (image->matrix == NULL)
+			printf("No image loaded\n");
+		else
+			printf("Invalid command\n");
+		return;
+	}
+	maximum_stars = convert_string_to_integer(token);
+	token = strtok(NULL, " \n");
+	if (token == NULL) {
+		if (image->matrix == NULL)
+			printf("No image loaded\n");
+		else
+			printf("Invalid command\n");
+		return;
+	}
+	number_bins = convert_string_to_integer(token);
+	token = strtok(NULL, " \n");
+	if (token != NULL) {
+		if (image->matrix == NULL)
+			printf("No image loaded\n");
+		else
+			printf("Invalid command\n");
+		return;
+	}
 	calculate_histogram(image, maximum_stars, number_bins);
 }
 
