@@ -79,7 +79,8 @@ void select_image_region(image *image, int first_x, int first_y, int second_x, i
 	}
 
 	if (first_x >= 0 && first_x < image->width && second_x >= 0 && second_x <= image->width && 
-	    first_y >= 0 && first_y < image->height && second_y >= 0 && second_y <= image->height) {
+	    first_y >= 0 && first_y < image->height && second_y >= 0 && second_y <= image->height &&
+		first_x != second_x && first_y != second_y) {
 		set_selection(image, first_x, first_y, second_x, second_y);
 		printf("Selected %d %d %d %d\n", first_x, first_y, second_x, second_y);
 	} else {
@@ -112,6 +113,7 @@ void set_selection(image *image, int first_x, int first_y, int second_x, int sec
 		first_y = second_y;
 		second_y = auxiliar;
 	}
+
 	image->x_minimum = first_x;
 	image->y_minimum = first_y;
 	image->x_maximum = second_x;
@@ -189,10 +191,7 @@ void calculate_equalization(image *image)
 	double result;
 	for (int i = 0; i < image->height; i++) {
 		for (int j = 0; j < image->width; j++) {
-			if (image->matrix[i][j] == 0)
-				result = 0;
-			else
-				result = (1.0 * image->maximum_value / (image->width * image->height)) * partial_sum_pixel_value_count[image->matrix[i][j] - 1];
+			result = (1.0 * image->maximum_value / (image->width * image->height)) * partial_sum_pixel_value_count[image->matrix[i][j]];
 			image->matrix[i][j] = clamp((int)round(result), 0, image->maximum_value);
 		}
 	}

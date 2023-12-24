@@ -39,6 +39,8 @@ void apply_effect(image *image)
 	if ((int)effect[0] == 10) {
 		if (image->matrix == NULL)
 			printf("No image loaded\n");
+		else
+			printf("Invalid command\n");
 		return;
 	}
 
