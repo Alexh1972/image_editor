@@ -140,29 +140,43 @@ void calculate_histogram(image *image, int maximum_stars, int number_bins)
 		for (int j = image->x_minimum; j < image->x_maximum; j++)
 			pixel_value_count[image->matrix[i][j]]++;
 
-	int bin_length = image->maximum_value / number_bins + 1;
+	int bin_length = image->maximum_value / number_bins;
 	int bin_sum = 0, number_stars;
-	for (int i = 0; i <= image->maximum_value; i += bin_length) {
-		bin_sum = 0;
-		for (int j = i; j < i + bin_length && j < image->maximum_value; j++) {
-			bin_sum += pixel_value_count[j];
+
+	if (image->maximum_value % number_bins != 0)
+		bin_length++;
+
+	for (int i = 0; i <= image->maximum_value; i++) {
+		if (i % bin_length == 0) {
+			if (bin_sum > maximum_bin_sum)
+				maximum_bin_sum = bin_sum;
+			bin_sum = 0;
 		}
-		if (bin_sum > maximum_bin_sum)
+		
+		bin_sum += pixel_value_count[i];
+	}
+
+	if (bin_sum > maximum_bin_sum)
 			maximum_bin_sum = bin_sum;
-	}
-
-	for (int i = 0; i <= image->maximum_value; i += bin_length) {
-		bin_sum = 0;
-		for (int j = i; j < i + bin_length && j < image->maximum_value; j++) {
-			bin_sum += pixel_value_count[j];
+	bin_sum = 0;
+	for (int i = 0; i <= image->maximum_value; i++) {
+		if (i % bin_length == 0 && i != 0) {
+			number_stars = 1.0 * (bin_sum * maximum_stars) / maximum_bin_sum;
+			printf("%d\t|\t", number_stars);
+			for (int j = 0; j < number_stars; j++)
+				printf("*");
+			printf("\n");
+			bin_sum = 0;
 		}
-		number_stars = (bin_sum * maximum_stars) / maximum_bin_sum;
-		printf("%d\t|\t", number_stars);
-		for (int j = 0; j < number_stars; j++)
-			printf("*");
-		printf("\n");
+		
+		bin_sum += pixel_value_count[i];
 	}
 
+	number_stars = 1.0 * (bin_sum * maximum_stars) / maximum_bin_sum;
+	printf("%d\t|\t", number_stars);
+	for (int j = 0; j < number_stars; j++)
+		printf("*");
+	printf("\n");
 }
 
 void calculate_equalization(image *image)
