@@ -2,7 +2,7 @@
 
 CFLAGS = -Wall -Wextra
 
-build: compile valgrind clean
+build: compile
 compile:
 	gcc -g image_editor.c application.c image.c command.c utils.c memory.c $(CFLAGS) -o image_editor -lm
 run:

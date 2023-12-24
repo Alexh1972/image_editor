@@ -81,7 +81,7 @@ void select_image_region(image *image, int first_x, int first_y, int second_x, i
 	if (first_x >= 0 && first_x < image->width && second_x >= 0 && second_x <= image->width && 
 	    first_y >= 0 && first_y < image->height && second_y >= 0 && second_y <= image->height) {
 		set_selection(image, first_x, first_y, second_x, second_y);
-		printf("Selected %d %d %d %d\n", first_x, second_x, first_y, second_y);
+		printf("Selected %d %d %d %d\n", first_x, first_y, second_x, second_y);
 	} else {
 		printf("Invalid set of coordinates\n");
 	}
@@ -520,24 +520,40 @@ void apply_gaussian_blur(image *image)
 
 void apply_kernel(image *image, double kernel[3][3])
 {
-	for (int i = 0; i < image->height - 2; i++) {
-		for (int j = 0; j < image->width - 2; j++) {
+	int start_x = image->x_minimum, start_y = image->y_minimum;
+	int final_x = image->x_maximum, final_y = image->y_maximum;
+	int **new_matrix = allocate_matrix(image->height, 3 * image->width);
+
+	if (start_x < 1) start_x = 1;
+	if (start_y < 1) start_y = 1;
+	if (final_x > image->width - 1) final_x = image->width - 1;
+	if (final_y > image->height - 1) final_y = image->height - 1;
+
+	for (int i = 0; i < image->height; i++)
+		for (int j = 0; j < 3 * image->width; j++)
+			new_matrix[i][j] = image->matrix[i][j];
+
+	for (int i = start_y; i < final_y; i++) {
+		for (int j = start_x; j < final_x; j++) {
 			double new_red_pixel = 0, new_green_pixel = 0, new_blue_pixel = 0;
 			for (int k = 0; k < 3; k++) {
 				for (int l = 0; l < 3; l++) {
-					new_red_pixel += image->matrix[i + k][3 * (j + l)] * kernel[k][l];
-					new_green_pixel += image->matrix[i + k][3 * (j + l) + 1] * kernel[k][l];
-					new_blue_pixel += image->matrix[i + k][3 * (j + l) + 2] * kernel[k][l];
+					new_red_pixel += image->matrix[i + k - 1][3 * (j + l - 1)] * kernel[k][l];
+					new_green_pixel += image->matrix[i + k - 1][3 * (j + l - 1) + 1] * kernel[k][l];
+					new_blue_pixel += image->matrix[i + k - 1][3 * (j + l - 1) + 2] * kernel[k][l];
 				}
 			}
 			new_red_pixel = clamp(round(new_red_pixel), 0, image->maximum_value);
 			new_green_pixel = clamp(round(new_green_pixel), 0, image->maximum_value);
 			new_blue_pixel = clamp(round(new_blue_pixel), 0, image->maximum_value);
-			image->matrix[i][3 * j] = new_red_pixel;
-			image->matrix[i][3 * j + 1] = new_green_pixel;
-			image->matrix[i][3 * j + 2] = new_blue_pixel;
+			new_matrix[i][3 * j] = new_red_pixel;
+			new_matrix[i][3 * j + 1] = new_green_pixel;
+			new_matrix[i][3 * j + 2] = new_blue_pixel;
 		}
 	}
+
+	free_matrix(image->matrix, image->height);
+	image->matrix = new_matrix;
 }
 
 void save_image_file(image *image, int is_binary, char file_name[])

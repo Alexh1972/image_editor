@@ -31,8 +31,17 @@ void rotate_image(image *image)
 
 void apply_effect(image *image)
 {
-	char effect_name[1000];
-	scanf("%s", effect_name);
+	char effect[1000], effect_name[1000];
+	fgets(effect, 1000, stdin);
+
+	sscanf(effect, "%s", effect_name);
+
+	if ((int)effect[0] == 10) {
+		if (image->matrix == NULL)
+			printf("No image loaded\n");
+		return;
+	}
+
 	if (strcmp(effect_name, "EDGE") == 0) {
 		apply_edge_detection(image);
 	} else if (strcmp(effect_name, "SHARPEN") == 0) {

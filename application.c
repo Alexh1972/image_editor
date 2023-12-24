@@ -20,12 +20,7 @@ void execute_command(int *is_running, image *image)
 		scanf("%s", file_name);
 		load_image(image, file_name);
 	} else if (strcmp(command, "EXIT") == 0) {
-		if (image->matrix == NULL) {
-			printf("No image loaded\n");
-			return;
-		}
-		*is_running = 0;
-		free_image_resources(image);
+		stop(image, is_running);
 	} else if (strcmp(command, "SELECT") == 0) {
 		select_from_image(image);
 	} else if (strcmp(command, "HISTOGRAM") == 0) {
@@ -44,4 +39,13 @@ void execute_command(int *is_running, image *image)
 		fgets(command, 1000, stdin);
 		printf("Invalid command\n");
 	}
+} 
+
+void stop(image *image, int *is_running)
+{
+	if (image->matrix == NULL)
+		printf("No image loaded\n");
+	else
+		free_image_resources(image);
+	*is_running = 0;
 }

@@ -10,3 +10,5 @@
 void run(void);
 
 void execute_command(int *is_running, image *image);
+
+void stop(image *image, int *is_running);
