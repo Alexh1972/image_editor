@@ -4,11 +4,13 @@ void load_image(image *image, char file_name[])
 {
 	char file_format[3];
 	int width, height, maximum_value;
+	// frees all the resources of the anterior image
 	if (image->matrix)
 		free_image_resources(image);
 
 	image->file = fopen(file_name, "rb");
 
+	// reads the image based on the file format
 	if (image->file) {
 		int is_binary = identify_file_format(image->file, file_format);
 		strcpy(image->file_format, file_format);
@@ -88,6 +90,7 @@ void select_image_region(image *image,
 
 	int auxiliar;
 
+	// checks if coordinated are valid
 	if (first_x >= 0 && first_x < image->width &&
 		second_x >= 0 && second_x <= image->width &&
 	    first_y >= 0 && first_y < image->height &&
@@ -150,6 +153,7 @@ void calculate_histogram(image *image, int maximum_stars, int number_bins)
 	for (int i = 0; i <= image->maximum_value; i++)
 		pixel_value_count[i] = 0;
 
+	// counts the number of each pixel value appearance
 	for (int i = image->y_minimum; i < image->y_maximum; i++)
 		for (int j = image->x_minimum; j < image->x_maximum; j++)
 			pixel_value_count[image->matrix[i][j]]++;
@@ -175,6 +179,7 @@ void calculate_histogram(image *image, int maximum_stars, int number_bins)
 
 	bin_sum = 0;
 
+	// calculates how many * will each line have
 	for (int i = 0; i <= image->maximum_value; i++) {
 		if (i % bin_length == 0 && i != 0) {
 			number_stars = 1.0 * (bin_sum * maximum_stars) / maximum_bin_sum;
@@ -212,6 +217,8 @@ void calculate_equalization(image *image)
 	}
 
 	int partial_sum_pixel_value_count[image->maximum_value + 1];
+	// calculates how many pixels have its value less than a
+	// certain pixel
 	for (int i = 0; i <= image->maximum_value; i++)
 		partial_sum_pixel_value_count[i] = 0;
 
@@ -224,6 +231,7 @@ void calculate_equalization(image *image)
 		partial_sum_pixel_value_count[i - 1];
 
 	double result;
+	// calculates new pixel value
 	for (int i = 0; i < image->height; i++) {
 		for (int j = 0; j < image->width; j++) {
 			result = (1.0 * image->maximum_value /
@@ -610,6 +618,7 @@ void apply_kernel(image *image, double kernel[3][3])
 		for (int j = 0; j < 3 * image->width; j++)
 			new_matrix[i][j] = image->matrix[i][j];
 
+	// applying the kernel for all pixels in a certain selection
 	for (int i = start_y; i < final_y; i++) {
 		for (int j = start_x; j < final_x; j++) {
 			double new_red_pixel = 0, new_green_pixel = 0, new_blue_pixel = 0;
