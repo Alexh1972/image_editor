@@ -27,5 +27,5 @@ void apply_effect(image *image);
 /// where the image will be saved and
 /// the format.
 /// @param image The image which will be
-/// saved. 
+/// saved.
 void save_image(image *image);

@@ -2,7 +2,7 @@
 /// with certain height and width.
 /// @param height The width.
 /// @param width The height.
-/// @return 
+/// @return The pointer indicating to the matrix.
 int **allocate_matrix(int height, int width);
 
 /// @brief Frees a matrix.

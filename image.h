@@ -75,7 +75,7 @@ void set_selection(image *image,
 /// number of stars that need to be
 ///  printed on every line.
 /// @param number_bins The number of
-/// lines. 
+/// lines.
 void calculate_histogram(image *image, int maximum_stars, int number_bins);
 
 /// @brief Stores the image after
