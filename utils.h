@@ -1,6 +1,6 @@
 #include <stdio.h>
 
-int identify_file_format(FILE *file, char file_format[]);
+int identify_file_format(FILE * file, char file_format[]);
 
 int read_integer(FILE *file);
 

@@ -1,6 +1,6 @@
 #include "image.h"
 
-void select_from_image(image *image);
+void select_from_image(image * image);
 
 void print_histogram(image *image);
 
