@@ -59,5 +59,3 @@ void apply_gaussian_blur(image *image);
 void apply_kernel(image *image, double kernel[3][3]);
 
 void save_image_file(image *image, int is_binary, char file_name[]);
-
-

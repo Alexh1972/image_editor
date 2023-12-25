@@ -3,12 +3,11 @@
 void run(void)
 {
 	int is_running = 1;
-	image image;
-	image.file = NULL;
-	image.matrix = NULL;
-	while (is_running) {
-		execute_command(&is_running, &image);
-	}
+	image image_data;
+	image_data.file = NULL;
+	image_data.matrix = NULL;
+	while (is_running)
+		execute_command(&is_running, &image_data);
 }
 
 void execute_command(int *is_running, image *image)
@@ -39,11 +38,11 @@ void execute_command(int *is_running, image *image)
 		fgets(command, 1000, stdin);
 		printf("Invalid command\n");
 	}
-} 
+}
 
 void stop(image *image, int *is_running)
 {
-	if (image->matrix == NULL)
+	if (!image->matrix)
 		printf("No image loaded\n");
 	else
 		free_image_resources(image);

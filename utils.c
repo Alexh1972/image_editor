@@ -11,11 +11,15 @@ int identify_file_format(FILE *file, char file_format[])
 		strcpy(file_format, "ppm");
 	else if (strcmp(header, "P1") == 0 || strcmp(header, "P4") == 0)
 		strcpy(file_format, "pbm");
-	
-	if (strcmp(header, "P2") == 0 || strcmp(header, "P3") == 0 || strcmp(header, "P1") == 0)
+
+	if (strcmp(header, "P2") == 0 ||
+		strcmp(header, "P3") == 0 ||
+		strcmp(header, "P1") == 0)
 		return 0;
-	
-	if (strcmp(header, "P5") == 0 || strcmp(header, "P6") == 0 || strcmp(header, "P4") == 0)
+
+	if (strcmp(header, "P5") == 0 ||
+		strcmp(header, "P6") == 0 ||
+		strcmp(header, "P4") == 0)
 		return 1;
 	return 0;
 }
@@ -25,9 +29,9 @@ int read_integer(FILE *file)
 	char character;
 	int answer = 0;
 	character = fgetc(file);
-	while (!feof(file) && !(character >= '0' && character <= '9')) {
+	while (!feof(file) && !(character >= '0' && character <= '9'))
 		character = fgetc(file);
-	}
+
 	while (!feof(file) && character >= '0' && character <= '9') {
 		answer = answer * 10 + ((int)character - '0');
 		character = fgetc(file);

@@ -401,7 +401,7 @@ void save_pgm_image(image *image, int is_binary, char file_name[])
 	} else {
 		for (int i = 0; i < image->height; i++) {
 			for (int j = 0; j < image->width; j++)
-				fprintf(file,"%d ", image->matrix[i][j]);
+				fprintf(file, "%d ", image->matrix[i][j]);
 			fprintf(file, "\n");
 		}
 	}
@@ -620,7 +620,7 @@ void apply_kernel(image *image, double kernel[3][3])
 					kernel[k][l];
 
 					new_green_pixel +=
-					image->matrix[i + k - 1][3 * (j + l - 1) + 1] * 
+					image->matrix[i + k - 1][3 * (j + l - 1) + 1] *
 					kernel[k][l];
 
 					new_blue_pixel +=
