@@ -1,3 +1,5 @@
+// Copyright Cazacu Alexandru-Dan 312CA 2023-2024
+
 /// @brief Allocates memory for a matrix
 /// with certain height and width.
 /// @param height The width.

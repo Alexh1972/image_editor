@@ -1,3 +1,4 @@
+// Copyright Cazacu Alexandru-Dan 312CA 2023-2024
 #include "application.h"
 
 int **allocate_matrix(int height, int width)

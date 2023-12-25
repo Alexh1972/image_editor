@@ -1,3 +1,4 @@
+// Copyright Cazacu Alexandru-Dan 312CA 2023-2024
 #include "image.h"
 
 /// @brief Reads selection coordinates.

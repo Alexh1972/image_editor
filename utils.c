@@ -1,3 +1,4 @@
+// Copyright Cazacu Alexandru-Dan 312CA 2023-2024
 #include "utils.h"
 #include <string.h>
 
