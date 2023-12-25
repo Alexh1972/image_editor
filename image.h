@@ -16,11 +16,19 @@ void read_matrix(image *image, int width, int height);
 
 void read_matrix_binary(image *image, int width, int height);
 
-void select_image_region(image *image, int first_x, int first_y, int second_x, int second_y);
+void select_image_region(image *image,
+						 int first_x,
+						 int first_y,
+						 int second_x,
+						 int second_y);
 
 void select_whole_image(image *image);
 
-void set_selection(image *image, int first_x, int first_y, int second_x, int second_y);
+void set_selection(image *image,
+				   int first_x,
+				   int first_y,
+				   int second_x,
+				   int second_y);
 
 void calculate_histogram(image *image, int maximum_stars, int number_bins);
 

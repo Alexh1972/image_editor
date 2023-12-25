@@ -3,7 +3,7 @@
 int **allocate_matrix(int height, int width)
 {
 	int **matrix = malloc(height * sizeof(int *));
-	
+
 	for (int i = 0; i < height; i++)
 		matrix[i] = calloc(width, sizeof(int));
 	return matrix;

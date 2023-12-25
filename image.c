@@ -4,20 +4,24 @@ void load_image(image *image, char file_name[])
 {
 	char file_format[3];
 	int width, height, maximum_value;
-	if (image->matrix != NULL) {
+	if (image->matrix)
 		free_image_resources(image);
-	}
-	if ((image->file = fopen(file_name, "rb"))) {
+
+	image->file = fopen(file_name, "rb");
+
+	if (image->file) {
 		int is_binary = identify_file_format(image->file, file_format);
 		strcpy(image->file_format, file_format);
 		eliminate_comments(image->file);
 		fscanf(image->file, "%d%d", &width, &height);
 		eliminate_comments(image->file);
+
 		image->width = width;
 		image->height = height;
 		if (strcmp(file_format, "pgm") == 0) {
 			fscanf(image->file, "%d", &maximum_value);
 			image->maximum_value = maximum_value;
+
 			if (!is_binary)
 				read_matrix(image, width, height);
 			else
@@ -25,7 +29,7 @@ void load_image(image *image, char file_name[])
 		} else if (strcmp(file_format, "ppm") == 0) {
 			fscanf(image->file, "%d", &maximum_value);
 			image->maximum_value = maximum_value;
-			
+
 			if (!is_binary)
 				read_matrix(image, 3 * width, height);
 			else
@@ -40,12 +44,12 @@ void load_image(image *image, char file_name[])
 		image->y_minimum = 0;
 		image->x_maximum = image->width;
 		image->y_maximum = image->height;
+
 		fclose(image->file);
 		printf("Loaded %s\n", file_name);
 	} else {
 		printf("Failed to load %s\n", file_name);
 	}
-	
 }
 
 void read_matrix(image *image, int width, int height)
@@ -71,16 +75,23 @@ void read_matrix_binary(image *image, int width, int height)
 	}
 }
 
-void select_image_region(image *image, int first_x, int first_y, int second_x, int second_y)
+void select_image_region(image *image,
+						 int first_x,
+						 int first_y,
+						 int second_x,
+						 int second_y)
 {
-	if (image->matrix == NULL) {
+	if (!image->matrix) {
 		printf("No image loaded\n");
 		return;
 	}
+
 	int auxiliar;
 
-	if (first_x >= 0 && first_x < image->width && second_x >= 0 && second_x <= image->width && 
-	    first_y >= 0 && first_y < image->height && second_y >= 0 && second_y <= image->height &&
+	if (first_x >= 0 && first_x < image->width &&
+		second_x >= 0 && second_x <= image->width &&
+	    first_y >= 0 && first_y < image->height &&
+		second_y >= 0 && second_y <= image->height &&
 		first_x != second_x && first_y != second_y) {
 		if (first_x > second_x) {
 			auxiliar = first_x;
@@ -97,12 +108,11 @@ void select_image_region(image *image, int first_x, int first_y, int second_x, i
 	} else {
 		printf("Invalid set of coordinates\n");
 	}
-	
 }
 
 void select_whole_image(image *image)
 {
-	if (image->matrix == NULL) {
+	if (!image->matrix) {
 		printf("No image loaded\n");
 		return;
 	}
@@ -111,7 +121,11 @@ void select_whole_image(image *image)
 	printf("Selected ALL\n");
 }
 
-void set_selection(image *image, int first_x, int first_y, int second_x, int second_y)
+void set_selection(image *image,
+				   int first_x,
+				   int first_y,
+				   int second_x,
+				   int second_y)
 {
 	image->x_minimum = first_x;
 	image->y_minimum = first_y;
@@ -121,7 +135,7 @@ void set_selection(image *image, int first_x, int first_y, int second_x, int sec
 
 void calculate_histogram(image *image, int maximum_stars, int number_bins)
 {
-	if (image->matrix == NULL) {
+	if (!image->matrix) {
 		printf("No image loaded\n");
 		return;
 	}
@@ -152,28 +166,34 @@ void calculate_histogram(image *image, int maximum_stars, int number_bins)
 				maximum_bin_sum = bin_sum;
 			bin_sum = 0;
 		}
-		
+
 		bin_sum += pixel_value_count[i];
 	}
 
 	if (bin_sum > maximum_bin_sum)
-			maximum_bin_sum = bin_sum;
+		maximum_bin_sum = bin_sum;
+
 	bin_sum = 0;
+
 	for (int i = 0; i <= image->maximum_value; i++) {
 		if (i % bin_length == 0 && i != 0) {
 			number_stars = 1.0 * (bin_sum * maximum_stars) / maximum_bin_sum;
+
 			printf("%d\t|\t", number_stars);
+
 			for (int j = 0; j < number_stars; j++)
 				printf("*");
 			printf("\n");
 			bin_sum = 0;
 		}
-		
+
 		bin_sum += pixel_value_count[i];
 	}
 
 	number_stars = 1.0 * (bin_sum * maximum_stars) / maximum_bin_sum;
+
 	printf("%d\t|\t", number_stars);
+
 	for (int j = 0; j < number_stars; j++)
 		printf("*");
 	printf("\n");
@@ -181,7 +201,7 @@ void calculate_histogram(image *image, int maximum_stars, int number_bins)
 
 void calculate_equalization(image *image)
 {
-	if (image->matrix == NULL) {
+	if (!image->matrix) {
 		printf("No image loaded\n");
 		return;
 	}
@@ -200,12 +220,18 @@ void calculate_equalization(image *image)
 			partial_sum_pixel_value_count[image->matrix[i][j]]++;
 
 	for (int i = 1; i <= image->maximum_value; i++)
-		partial_sum_pixel_value_count[i] += partial_sum_pixel_value_count[i - 1];
+		partial_sum_pixel_value_count[i] +=
+		partial_sum_pixel_value_count[i - 1];
+
 	double result;
 	for (int i = 0; i < image->height; i++) {
 		for (int j = 0; j < image->width; j++) {
-			result = (1.0 * image->maximum_value / (image->width * image->height)) * partial_sum_pixel_value_count[image->matrix[i][j]];
-			image->matrix[i][j] = clamp((int)round(result), 0, image->maximum_value);
+			result = (1.0 * image->maximum_value /
+			(image->width * image->height)) *
+			partial_sum_pixel_value_count[image->matrix[i][j]];
+
+			image->matrix[i][j] =
+			clamp((int)round(result), 0, image->maximum_value);
 		}
 	}
 	printf("Equalize done\n");
@@ -218,12 +244,12 @@ void rotate_pgm_image(image *image, int angle)
 		while (angle) {
 			rotated_image = allocate_matrix(image->width, image->height);
 			for (int i = 0; i < image->width; i++)
-					for (int j = 0; j < image->height; j++)
-						rotated_image[i][image->height - j - 1] = image->matrix[j][i];
-
+				for (int j = 0; j < image->height; j++)
+					rotated_image[i][image->height - j - 1] =
+					image->matrix[j][i];
 
 			free_matrix(image->matrix, image->height);
-			
+
 			auxiliar = image->width;
 			image->width = image->height;
 			image->height = auxiliar;
@@ -241,12 +267,15 @@ void rotate_pgm_image(image *image, int angle)
 		while (angle) {
 			for (int i = image->y_minimum; i < image->y_maximum; i++)
 				for (int j = image->x_minimum; j < image->x_maximum; j++)
-					rotated_image[i][j] = image->matrix[image->y_maximum - j + image->x_minimum - 1][image->x_minimum - image->y_minimum + i];
-			
+					rotated_image[i][j] =
+					image->matrix[image->y_maximum - j +
+					image->x_minimum - 1][image->x_minimum -
+					image->y_minimum + i];
+
 			for (int i = image->y_minimum; i < image->y_maximum; i++)
 				for (int j = image->x_minimum; j < image->x_maximum; j++)
 					image->matrix[i][j] = rotated_image[i][j];
-			
+
 			angle -= 90;
 		}
 
@@ -261,16 +290,18 @@ void rotate_ppm_image(image *image, int angle)
 		while (angle) {
 			rotated_image = allocate_matrix(image->width, image->height * 3);
 			for (int i = 0; i < image->width; i++) {
-					for (int j = 0; j < image->height; j++) {
-						rotated_image[i][3 * (image->height - j - 1)] = image->matrix[j][3 * i];
-						rotated_image[i][3 * (image->height - j - 1) + 1] = image->matrix[j][3 * i + 1];
-						rotated_image[i][3 * (image->height - j - 1) + 2] = image->matrix[j][3 * i + 2];
-					}
+				for (int j = 0; j < image->height; j++) {
+					rotated_image[i][3 * (image->height - j - 1)] =
+					image->matrix[j][3 * i];
+					rotated_image[i][3 * (image->height - j - 1) + 1] =
+					image->matrix[j][3 * i + 1];
+					rotated_image[i][3 * (image->height - j - 1) + 2] =
+					image->matrix[j][3 * i + 2];
+				}
 			}
 
-
 			free_matrix(image->matrix, image->height);
-			
+
 			auxiliar = image->width;
 			image->width = image->height;
 			image->height = auxiliar;
@@ -288,15 +319,23 @@ void rotate_ppm_image(image *image, int angle)
 		while (angle) {
 			for (int i = image->y_minimum; i < image->y_maximum; i++) {
 				for (int j = image->x_minimum; j < image->x_maximum; j++) {
-					rotated_image[i][3 * j] = image->matrix[image->y_maximum - j + image->x_minimum - 1][3 * (image->x_minimum - image->y_minimum + i)];
-					rotated_image[i][3 * j + 1] = image->matrix[image->y_maximum - j + image->x_minimum - 1][3 * (image->x_minimum - image->y_minimum + i) + 1];
-					rotated_image[i][3 * j + 2] = image->matrix[image->y_maximum - j + image->x_minimum - 1][3 * (image->x_minimum - image->y_minimum + i) + 2];
+					rotated_image[i][3 * j] = image->matrix
+					[image->y_maximum - j + image->x_minimum - 1]
+					[3 * (image->x_minimum - image->y_minimum + i)];
+
+					rotated_image[i][3 * j + 1] = image->matrix
+					[image->y_maximum - j + image->x_minimum - 1]
+					[3 * (image->x_minimum - image->y_minimum + i) + 1];
+
+					rotated_image[i][3 * j + 2] = image->matrix
+					[image->y_maximum - j + image->x_minimum - 1]
+					[3 * (image->x_minimum - image->y_minimum + i) + 2];
 				}
 			}
 			for (int i = image->y_minimum; i < image->y_maximum; i++)
 				for (int j = image->x_minimum; j < 3 * image->x_maximum; j++)
 					image->matrix[i][j] = rotated_image[i][j];
-			
+
 			angle -= 90;
 		}
 
@@ -306,12 +345,13 @@ void rotate_ppm_image(image *image, int angle)
 
 void rotate_image_selection(image *image, int angle)
 {
-	if (image->matrix == NULL) {
+	if (!image->matrix) {
 		printf("No image loaded\n");
 		return;
 	}
 
-	if (image->x_maximum - image->x_minimum != image->y_maximum - image->y_minimum) {
+	if (image->x_maximum - image->x_minimum !=
+		image->y_maximum - image->y_minimum) {
 		if (!whole_image_selected(image)) {
 			printf("The selection must be square\n");
 			return;
@@ -321,15 +361,18 @@ void rotate_image_selection(image *image, int angle)
 	if (rotation_angle < 0)
 		rotation_angle = 360 + rotation_angle;
 
-	if (rotation_angle != 0 && rotation_angle != 90 && rotation_angle != 180 && rotation_angle != 270 && rotation_angle != 360) {
+	if (rotation_angle != 0 &&
+		rotation_angle != 90 &&
+		rotation_angle != 180 &&
+		rotation_angle != 270 &&
+		rotation_angle != 360) {
 		printf("Unsupported rotation angle\n");
 		return;
 	}
 
-	if (strcmp(image->file_format, "ppm") == 0) {
+	if (strcmp(image->file_format, "ppm") == 0)
 		rotate_ppm_image(image, rotation_angle);
-		
-	} else if (strcmp(image->file_format, "pgm") == 0)
+	else if (strcmp(image->file_format, "pgm") == 0)
 		rotate_pgm_image(image, rotation_angle);
 	printf("Rotated %d\n", angle);
 }
@@ -341,7 +384,11 @@ void save_pgm_image(image *image, int is_binary, char file_name[])
 		fprintf(file, "P5\n");
 	else
 		fprintf(file, "P2\n");
-	fprintf(file,"%d %d\n%d\n", image->width, image->height, image->maximum_value);
+	fprintf(file,
+			"%d %d\n%d\n",
+			image->width,
+			image->height,
+			image->maximum_value);
 	if (is_binary) {
 		unsigned char *data;
 		data = malloc(image->width * sizeof(unsigned char));
@@ -353,10 +400,9 @@ void save_pgm_image(image *image, int is_binary, char file_name[])
 		free(data);
 	} else {
 		for (int i = 0; i < image->height; i++) {
-			for (int j = 0; j < image->width; j++) {
+			for (int j = 0; j < image->width; j++)
 				fprintf(file,"%d ", image->matrix[i][j]);
-			}
-			fprintf(file,"\n");
+			fprintf(file, "\n");
 		}
 	}
 	fclose(file);
@@ -369,7 +415,11 @@ void save_ppm_image(image *image, int is_binary, char file_name[])
 		fprintf(file, "P6\n");
 	else
 		fprintf(file, "P3\n");
-	fprintf(file,"%d %d\n%d\n", image->width, image->height, image->maximum_value);
+	fprintf(file,
+			"%d %d\n%d\n",
+			image->width,
+			image->height,
+			image->maximum_value);
 	if (is_binary) {
 		unsigned char *data;
 		data = malloc(3 * image->width * sizeof(unsigned char));
@@ -381,10 +431,9 @@ void save_ppm_image(image *image, int is_binary, char file_name[])
 		free(data);
 	} else {
 		for (int i = 0; i < image->height; i++) {
-			for (int j = 0; j < 3 * image->width; j++) {
-				fprintf(file,"%d ", image->matrix[i][j]);
-			}
-			fprintf(file,"\n");
+			for (int j = 0; j < 3 * image->width; j++)
+				fprintf(file, "%d ", image->matrix[i][j]);
+			fprintf(file, "\n");
 		}
 	}
 	fclose(file);
@@ -392,25 +441,31 @@ void save_ppm_image(image *image, int is_binary, char file_name[])
 
 int whole_image_selected(image *image)
 {
-	return image->x_minimum == 0 && image->y_minimum == 0 && image->x_maximum == image->width && image->y_maximum == image->height;
+	return image->x_minimum == 0 &&
+		   image->y_minimum == 0 &&
+		   image->x_maximum == image->width &&
+		   image->y_maximum == image->height;
 }
 
 void crop_image(image *image)
 {
-	if (image->matrix == NULL) {
+	if (!image->matrix) {
 		printf("No image loaded\n");
 		return;
 	}
-	
+
 	int **cropped_image;
 
 	if (strcmp(image->file_format, "pgm") == 0) {
-		cropped_image = allocate_matrix(image->y_maximum - image->y_minimum, image->x_maximum - image->x_minimum);
+		cropped_image =
+		allocate_matrix(image->y_maximum - image->y_minimum,
+						image->x_maximum - image->x_minimum);
 
 		for (int i = 0; i < image->y_maximum - image->y_minimum; i++)
 			for (int j = 0; j < image->x_maximum - image->x_minimum; j++)
-				cropped_image[i][j] = image->matrix[image->y_minimum + i][image->x_minimum + j];
-		
+				cropped_image[i][j] =
+				image->matrix[image->y_minimum + i][image->x_minimum + j];
+
 		free_matrix(image->matrix, image->height);
 		image->height = image->y_maximum - image->y_minimum;
 		image->width = image->x_maximum - image->x_minimum;
@@ -420,12 +475,15 @@ void crop_image(image *image)
 		image->y_maximum = image->height;
 		image->matrix = cropped_image;
 	} else if (strcmp(image->file_format, "ppm") == 0) {
-		cropped_image = allocate_matrix(image->y_maximum - image->y_minimum, 3 * (image->x_maximum - image->x_minimum));
+		cropped_image =
+		allocate_matrix(image->y_maximum - image->y_minimum,
+						3 * (image->x_maximum - image->x_minimum));
 
 		for (int i = 0; i < image->y_maximum - image->y_minimum; i++)
 			for (int j = 0; j < 3 * (image->x_maximum - image->x_minimum); j++)
-				cropped_image[i][j] = image->matrix[image->y_minimum + i][3 * image->x_minimum + j];
-		
+				cropped_image[i][j] =
+				image->matrix[image->y_minimum + i][3 * image->x_minimum + j];
+
 		free_matrix(image->matrix, image->height);
 		image->height = image->y_maximum - image->y_minimum;
 		image->width = image->x_maximum - image->x_minimum;
@@ -440,7 +498,7 @@ void crop_image(image *image)
 
 void apply_edge_detection(image *image)
 {
-	if (image->matrix == NULL) {
+	if (!image->matrix) {
 		printf("No image loaded\n");
 		return;
 	}
@@ -463,7 +521,7 @@ void apply_edge_detection(image *image)
 
 void apply_sharpen(image *image)
 {
-	if (image->matrix == NULL) {
+	if (!image->matrix) {
 		printf("No image loaded\n");
 		return;
 	}
@@ -486,7 +544,7 @@ void apply_sharpen(image *image)
 
 void apply_blur(image *image)
 {
-	if (image->matrix == NULL) {
+	if (!image->matrix) {
 		printf("No image loaded\n");
 		return;
 	}
@@ -509,7 +567,7 @@ void apply_blur(image *image)
 
 void apply_gaussian_blur(image *image)
 {
-	if (image->matrix == NULL) {
+	if (!image->matrix) {
 		printf("No image loaded\n");
 		return;
 	}
@@ -536,10 +594,17 @@ void apply_kernel(image *image, double kernel[3][3])
 	int final_x = image->x_maximum, final_y = image->y_maximum;
 	int **new_matrix = allocate_matrix(image->height, 3 * image->width);
 
-	if (start_x < 1) start_x = 1;
-	if (start_y < 1) start_y = 1;
-	if (final_x > image->width - 1) final_x = image->width - 1;
-	if (final_y > image->height - 1) final_y = image->height - 1;
+	if (start_x < 1)
+		start_x = 1;
+
+	if (start_y < 1)
+		start_y = 1;
+
+	if (final_x > image->width - 1)
+		final_x = image->width - 1;
+
+	if (final_y > image->height - 1)
+		final_y = image->height - 1;
 
 	for (int i = 0; i < image->height; i++)
 		for (int j = 0; j < 3 * image->width; j++)
@@ -550,14 +615,28 @@ void apply_kernel(image *image, double kernel[3][3])
 			double new_red_pixel = 0, new_green_pixel = 0, new_blue_pixel = 0;
 			for (int k = 0; k < 3; k++) {
 				for (int l = 0; l < 3; l++) {
-					new_red_pixel += image->matrix[i + k - 1][3 * (j + l - 1)] * kernel[k][l];
-					new_green_pixel += image->matrix[i + k - 1][3 * (j + l - 1) + 1] * kernel[k][l];
-					new_blue_pixel += image->matrix[i + k - 1][3 * (j + l - 1) + 2] * kernel[k][l];
+					new_red_pixel +=
+					image->matrix[i + k - 1][3 * (j + l - 1)] *
+					kernel[k][l];
+
+					new_green_pixel +=
+					image->matrix[i + k - 1][3 * (j + l - 1) + 1] * 
+					kernel[k][l];
+
+					new_blue_pixel +=
+					image->matrix[i + k - 1][3 * (j + l - 1) + 2] *
+					kernel[k][l];
 				}
 			}
-			new_red_pixel = clamp(round(new_red_pixel), 0, image->maximum_value);
-			new_green_pixel = clamp(round(new_green_pixel), 0, image->maximum_value);
-			new_blue_pixel = clamp(round(new_blue_pixel), 0, image->maximum_value);
+			new_red_pixel =
+			clamp(round(new_red_pixel), 0, image->maximum_value);
+
+			new_green_pixel =
+			clamp(round(new_green_pixel), 0, image->maximum_value);
+
+			new_blue_pixel =
+			clamp(round(new_blue_pixel), 0, image->maximum_value);
+
 			new_matrix[i][3 * j] = new_red_pixel;
 			new_matrix[i][3 * j + 1] = new_green_pixel;
 			new_matrix[i][3 * j + 2] = new_blue_pixel;
@@ -570,7 +649,7 @@ void apply_kernel(image *image, double kernel[3][3])
 
 void save_image_file(image *image, int is_binary, char file_name[])
 {
-	if (image->matrix == NULL) {
+	if (!image->matrix) {
 		printf("No image loaded\n");
 		return;
 	}
